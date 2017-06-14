@@ -31,7 +31,7 @@ C = 3.5*(10**9) #(max carrying capacity (OD600=7))
 D = 0.20 # h-1  #(Levin et al., 1977)
 Ki = 10**(-7) #ml/h (Levin et al., 1977)
 b = 90 #(Levin et al., 1977)
-dp = 0.2#... 0.80 h-1 (in full sunlight) (Suttle & Chen, 1992)
+dp = 0.5#... 0.80 h-1 (in full sunlight) (Suttle & Chen, 1992)
 T = 0.5 #h-1 (Levin et al., 1977)
 Xs0 = 2.25*(10**4) # cells/ml starting leveles of cells (Levin et al., 1977)
 P0 = 5*(10**6) # particles/ml starting leveles of cells (Levin et al., 1977)
@@ -53,26 +53,23 @@ DDE = jitcdde(f)
 DDE.add_past_point(-1.0, [Xs0,P0], [0.0,0.0])
 DDE.add_past_point(0.0, [Xs0,P0], [0.0,0.0])
 
-DDE.set_integration_parameters(atol=10**(-12))
+DDE.set_integration_parameters(atol=10**(-12)) # changing integration parameters
 
 # short pre-integration to take care of discontinuities
 DDE.step_on_discontinuities()
 
 # create timescale
-stoptime =30.0
+stoptime =40.0 # Does not integrate past ~30
 numpoints = 100
-times = DDE.t + arange(0.0, 30.0, 1)
+times = DDE.t + linspace(0, stoptime, numpoints)
 size = times.size
 
 # integrating
 #data = []#empty((size,3))
 data=[]
 for time in times:
-    #data = hstack((time,DDE.integrate(time)))
     data = append(data, [[time, DDE.integrate(time)[0], DDE.integrate(time)[1]]])
-    #print(DDE.integrate(time))
-    #append(data, (time,DDE.integrate(time)))
-    #plt.plot(time, DDE.integrate(time)[1],  label=r'Xs')
+
 data = data.reshape(size,3)    
 print(data)
 
@@ -84,7 +81,7 @@ plt.legend()
 plt.xlabel('time t')
 plt.ylabel('population size')
 plt.yscale('log')
-plt.axis([-5,15,min(data),10000000000])
+plt.axis([0,50,0,10000000000])
 plt.tick_params(
     axis='both', # changes apply to both axis
     labelsize=12) # set new font size

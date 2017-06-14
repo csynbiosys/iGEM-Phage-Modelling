@@ -71,7 +71,7 @@ plt.legend()
 plt.xlabel('time t')
 plt.ylabel('population size')
 plt.yscale('log')
-plt.axis([-5,250,-1000000,10000000000])
+plt.axis([0,250,-1000000,10000000000])
 plt.tick_params(
     axis='both', # changes apply to both axis
     labelsize=12) # set new font size
