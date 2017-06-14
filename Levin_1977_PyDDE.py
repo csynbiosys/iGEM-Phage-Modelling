@@ -33,7 +33,7 @@ Ki = 6.24e-8 #ml/h (Levin et al., 1977)
 b = 98.0 #(Levin et al., 1977)
 Km = 4.0 #4 ug/ml(Levin et al., 1977)
 Y = 7.40e4 #(Levin et al., 1977)
-T = 1 #h-1 (Levin et al., 1977)
+T = 0.5 #h-1 (Levin et al., 1977)
 Xs0 = 1.0e4 # cells/ml starting levels of cells (Levin et al., 1977)
 P0 = 1.0e6 # particles/ml starting levels of cells (Levin et al., 1977)
 
