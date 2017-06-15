@@ -42,16 +42,16 @@ dde_camp = p.dde()
 # Defining the gradient function
 # s - state(Xs or P?), c - constant(ddecons), t - time
 def ddegrad(s, c, t):
-    
+
     Xslag = 0.0
     Plag = 0.0
-    
+
     if (t>c[7]): # if t > T
         Xslag = p.pastvalue(1,t-c[7],0)
-        Plag = p.pastvalue(3,t-c[7],0) 
+        Plag = p.pastvalue(3,t-c[7],0)
 
     g = array([0.0,0.0,0.0,0.0])
-    
+
     # s[0] = S(t), s[1] = Xs(t), s[2] = Xi(t), s[3] = P(t)
     # S = D*(S0-S) - Xs*u*S/(Km+S)*(1/Y) - Xi*u*S/(Km+S)*(1/Y)
     g[0] = c[2]*(c[1]-s[0]) - s[1]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[2]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6])
@@ -91,7 +91,7 @@ print(dde_camp.data)
 
 #plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'S')
 plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'Xs')
-#plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'Xi')
+plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'Xi')
 plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 4],  label=r'P')
 plt.legend()
 plt.xlabel('Time (hours)')
