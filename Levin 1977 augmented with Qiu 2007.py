@@ -17,6 +17,9 @@ import matplotlib.pyplot as plt
 # Xs0 = 2.25*10^4 # cells/ml.
 # P0 = 5*(10^6) # particles/ml starting levels of cells (Levin et al., 1977)
 
+# Time after start when lytic phage is added
+plyt_added = 25.0
+
 # Setting initial values
 u = 7.38 #(Levin et al., 1977)
 S0 = 30.0 #ug/ml(Levin et al., 1977)
@@ -32,10 +35,6 @@ q = 0.35 # induction rate (...)
 Pt0 = 1.0e6 # particles/ml of temperate phage
 Xl = 0 # no lysogenic bacteria present at the start
 Xi = 0 # no lytic bacteria present at the start
-
-# Time after start when lytic phage is added
-plyt_added = 25.0
-
 
 dde_camp = p.dde()
 dde_camp2 = p.dde()
