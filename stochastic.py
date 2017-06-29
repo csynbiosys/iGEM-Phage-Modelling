@@ -4,7 +4,7 @@ from numpy import *
 import matplotlib.pyplot as plt
 
 smod = stochpy.SSA(model_file='bact_phage_model.psc', dir='data')
-smod.DoStochSim(end=1.0e3)
+smod.DoStochSim(end=500.0, mode='time')
 smod.PlotSpeciesTimeSeries()
 stochpy.plt.yscale('log')
 
