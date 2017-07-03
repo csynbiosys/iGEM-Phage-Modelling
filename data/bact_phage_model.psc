@@ -43,17 +43,12 @@ death_Xl:
 lysogenic_Pt:
     Pt > $pool
     Ki*Xs*Pt
-    
 
-    
-
-    
-    
 
 
 
 # Variable species
-S = 30
+S = 300.0
 Xi = 0
 Xs = 1.0e4
 Xl = 0

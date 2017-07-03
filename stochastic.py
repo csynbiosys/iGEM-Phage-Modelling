@@ -9,8 +9,6 @@ smod.PlotSpeciesTimeSeries()
 stochpy.plt.yscale('log')
 
 #S = smod.data_stochsim
-
-
 #t= reshape(S.time, len(S.time))
 #print(S.species[:,0])
 
