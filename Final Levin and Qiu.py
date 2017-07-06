@@ -57,13 +57,13 @@ def ddegrad(s, c, t):
     g[0] = - s[1]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[2]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[4]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6])
     # Xs = Xs*u*S/(Km+S)*(1/Y) - Ki*Xs*P - Ki*Xs*Pt - D*Xs
     g[1] = s[1]*c[0]*s[0]/(c[5]+s[0]) - c[3]*s[1]*s[3] - c[3]*s[1]*s[5] - c[2]*s[1]
-    # Xi = Ki*Xs*P - D*Xi
+    # Xi = Ki*Xs*P - D*Xi - Ki*Xs(t-T)P(t-T)
     g[2] = 0
     # P = b*exp(-D*T)*Ki*Xs(t-T)P(t-T) - Ki*Xs*P
     g[3] = 0
     if (t>plyt_added): # after plyt_added hours lytic phage is added
-        # Xi = Ki*Xs*P - D*Xi
-        g[2] = c[3]*s[1]*s[3] - c[2]*s[2]
+        # Xi = Ki*Xs*P - D*Xi - Ki*Xs(t-T)P(t-T)
+        g[2] = c[3]*s[1]*s[3] - c[2]*s[2] - c[3]*Xslag*Plag
         # P = b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - Ki*Xl*P
         g[3] = c[4]*c[3]*Xslag*Plag - c[3]*s[1]*s[3] - c[3]*s[4]*s[3]
     # Xl = Xl*u*S/(Km+S)*(1/Y) + Ki*Xs*Pt - q*Xl - -D*Xl   # q*Xl induction rate still exists but set for very low value
