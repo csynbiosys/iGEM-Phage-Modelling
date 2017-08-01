@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Setting initial values
 u = 0.738 # (Levin et al., 1977)
-C = 3.5e9 # max carrying capacity (OD600=7)
+C = 7.0e9 # max carrying capacity (OD600=7)
 D = 0.20 # h-1  #(Levin et al., 1977)
 Ki = 6.24e-8 #ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
@@ -64,7 +64,7 @@ dde_camp.solve()
 print(dde_camp.data)
 
 plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'$X_S$')
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$P$')
+plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2], "r-",  label=r'$P$')
 plt.legend()
 plt.xlabel('Time (hours)')
 plt.ylabel('Log concentration (particles/ml)')
