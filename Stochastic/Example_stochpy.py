@@ -4,9 +4,11 @@ from numpy import *
 import matplotlib.pyplot as plt
 
 smod = stochpy.SSA(model_file='ge.psc', dir='data')
-smod.DoStochSim(end=1.0e3)
+smod.DoStochSim(end=10000.0, mode='steps')
 smod.PlotSpeciesTimeSeries()
-
+stochpy.plt.title("Your own title")
+stochpy.plt.show()
+stochpy.plt.savefig("stochpy_plot.pdf")
 S = smod.data_stochsim
 t= reshape(S.time, len(S.time))
 

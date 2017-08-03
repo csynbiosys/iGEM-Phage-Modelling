@@ -2,7 +2,7 @@
 
 transcription:
     D > M + D
-    u
+    u*1 
 
 degradation_m:
     M > $pool
