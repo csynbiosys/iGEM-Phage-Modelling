@@ -64,7 +64,7 @@ dde_camp.solve()
 print(dde_camp.data)
 
 plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'$X_S$')
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2], "r-",  label=r'$P$')
+plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2], "r:",  label=r'$P$')
 plt.legend()
 plt.xlabel('Time (hours)')
 plt.ylabel('Log concentration (particles/ml)')
