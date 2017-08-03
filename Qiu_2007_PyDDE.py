@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Setting initial values
 u = 0.738 # h-1 (Levin et al., 1977)
-S0 = 8.0 # ug/ml(Levin et al., 1977)
+S0 = 2.0 # ug/ml(Levin et al., 1977)
 D = 0.20 # h-1 (Levin et al., 1977)
 Ki = 6.24e-8 #ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
