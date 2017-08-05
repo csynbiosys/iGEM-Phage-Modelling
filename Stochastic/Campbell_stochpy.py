@@ -4,6 +4,6 @@ from numpy import *
 import matplotlib.pyplot as plt
 
 smod = stochpy.SSA(model_file='campbell_model.psc', dir='data')
-smod.DoStochSim(end=10.0, mode='time')
+smod.DoStochSim(quiet=False, end=10.0, mode='time')
 smod.PlotSpeciesTimeSeries()
 stochpy.plt.yscale('log')

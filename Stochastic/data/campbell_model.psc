@@ -10,13 +10,13 @@ washout_Xs:
     Xs*D
 
 infection_by_P:
-    Xs + P > Xi
-    Ki*Xs*P
+    Xs + P > Xs
+    P*Xs*Ki
 
-######################### P
+
 lysis_of_Xi:
     Xi > {98}P
-    0.6
+    2
 
 #washout_P:
 #    P > $pool
@@ -34,9 +34,9 @@ lysis_of_Xi:
 
 
 # Variable species
-Xi = 0   # cells/ml
-Xs = 1.0e1 * 5   # cells/ml
-P = 1.0e2 * 5  # particles/ml
+Xi = 1.0e1   # cells/ml
+Xs = 1.0e1    # cells/ml
+P = 1.0e2   # particles/ml
 
 # Parameters
 #Na = 6.02e23  # mol-1
