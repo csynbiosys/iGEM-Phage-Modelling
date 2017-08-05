@@ -1,37 +1,24 @@
 import math
-#%matplotlib inline
 from scipy import *
 from numpy import *
 import PyDDE.pydde as p
 import matplotlib.pyplot as plt
 
-
-# Standard parameters
-# u = 7.38 (Levin et al., 1977)
-# Ki = 10^(-7) ml/h (Levin et al., 1977)
-# b = 90 (Levin et al., 1977)
-# D = 0.20 h-1  (Levin et al., 1977)
-# dp = 0 ... 0.80 h-1 (in full sunlight) (Suttle & Chen, 1992)
-# C = 3.5*10^9 (max carrying capacity (OD600=7))
-# T = 0.5 h-1 (Levin et al., 1977)
-# Xs0 = 2.25*10^4 # cells/ml.
-# P0 = 5*(10^6) # particles/ml starting levels of cells (Levin et al., 1977)
-
 # Time after start when lytic phage is added
 plyt_added = 25.0
 
 # Setting initial values
-u = 0.738 #(Levin et al., 1977)
-S0 = 100.0 #ug/ml(Levin et al., 1977)
+u = 0.738 # h-1 (Levin et al., 1977)
+S0 = 100.0 # ug/ml(Levin et al., 1977)
 D = 0.20 # h-1  HERE USED AS COMMON DEATH RATE FOR BACTERIA
-Ki = 6.24e-8 #ml/h (Levin et al., 1977)
-b = 98.0 #(Levin et al., 1977)
-Km = 4.0 #4 ug/ml(Levin et al., 1977)
-Y = 7.40e4 #(Levin et al., 1977)
+Ki = 6.24e-8 # ml/h (Levin et al., 1977)
+b = 98.0 # (Levin et al., 1977)
+Km = 4.0 # ug/ml(Levin et al., 1977)
+Y = 7.40e4 # (Levin et al., 1977)
 T = plyt_added + 0.5 #h-1 (Levin et al., 1977)
 Xs0 = 1.0e6 # cells/ml starting levels of cells (Levin et al., 1977)
 P0 = 0 # particles/ml starting levels of cells (Levin et al., 1977)
-q = 0.001 # induction rate (...) MIGHT BE REMOVED LATER AT ALL
+q = 0.001 # induction rate (...)
 Pt0 = 1.0e6 # particles/ml of temperate phage
 Xl = 0 # no lysogenic bacteria present at the start
 Xi = 0 # no lytic bacteria present at the start

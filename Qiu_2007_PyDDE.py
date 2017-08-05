@@ -6,23 +6,23 @@ import matplotlib.pyplot as plt
 
 # Setting initial values
 u = 0.738 # h-1 (Levin et al., 1977)
-S0 = 2.0 # ug/ml(Levin et al., 1977)
+S0 = 30.0 # ug/ml(Levin et al., 1977)
 D = 0.20 # h-1 (Levin et al., 1977)
 Ki = 6.24e-8 #ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
 Km = 4.0 # ug/ml (Levin et al., 1977)
 Y = 3.85e5 #(Levin et al., 1977)
-q = 0.35 # induction rate (Qiu, 2007)
+q = 0.001 # induction rate (Qiu, 2007)
 T = 0.0 # no time latency
 Xs0 = 1.0e4 # cells/ml starting levels of cells (Levin et al., 1977)
 P0 = 1.0e6 # particles/ml starting levels of cells (Levin et al., 1977)
 
-sim_length = 1000.0 # set the simulation length time
+sim_length = 250.0 # set the simulation length time
 
 dde_camp = p.dde()
 
 # Defining the gradient function
-# s - state(Xs or P?), c - constant(ddecons), t - time
+# s - state(Xs,P,Xl,etc), c - constant(ddecons), t - time
 def ddegrad(s, c, t):
 
     Xslag = 0.0
@@ -37,9 +37,9 @@ def ddegrad(s, c, t):
     # s[0] = S(t), s[1] = Xs(t), s[2] = Xl(t), s[3] = P(t)
     # S = D*(S0-S) - Xs*u*S/(Km+S)*(1/Y) - Xl*u*S/(Km+S)*(1/Y)
     g[0] = c[2]*(c[1]-s[0]) - s[1]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[2]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6])
-    # Xs = Xs*u*S/(Km+S)*(1/Y) - Ki*Xs*P - D*Xs
+    # Xs = Xs*u*S/(Km+S) - Ki*Xs*P - D*Xs
     g[1] = s[1]*c[0]*s[0]/(c[5]+s[0]) - c[3]*s[1]*s[3] - c[2]*s[1]
-    # Xi = Xl*u*S/(Km+S)*(1/Y) + Ki*Xs*P - q*Xl - -D*Xl
+    # Xi = Xl*u*S/(Km+S) + Ki*Xs*P - q*Xl - -D*Xl
     g[2] = s[2]*c[0]*s[0]/(c[5]+s[0]) + c[3]*s[1]*s[3] -c[7]*s[2]- c[2]*s[2]
     # P = bqXl - Ki*Xs*P - D*P
     g[3] = c[4]*c[7]*s[2] - c[3]*s[1]*s[3] - c[2]*s[3]
