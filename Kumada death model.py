@@ -60,8 +60,9 @@ dde_camp.solve()
 print(dde_camp.data)
 
 f_size = 14 # set size for plot labels
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'$S$')
 plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$X_S$')
+plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'$S$')
+
 
 plt.legend(prop={'size': f_size})
 plt.xlabel('Time (hours)', fontsize=f_size)
