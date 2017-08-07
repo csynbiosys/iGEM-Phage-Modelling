@@ -22,24 +22,17 @@ death_Xs:
     Xs*D
 
 infection_by_P:
-    Xs > Xi
+    Xs + P > Xi
     Ki*Xs*P
 
 infection_by_Pt:
-    Xs > Xl
+    Xs + Pt > Xl
     Ki*Xs*Pt
 
 ######################### P
-produced_by_lysis_of_Xi:
-    P > P + P
-    P*b*Ki*Xs
-
-P_absorbed_onto_Xs:
-    P > $pool
-    Ki*Xs*P
 
 P_absorbed_onto_Xl:
-    P > $pool
+    P + Xl > Xl
     Ki*Xl*P
 
 ######################### Xl
@@ -52,20 +45,24 @@ death_Xl:
     Xl*D
 
 ######################### Pt
-Pt_absorbed_onto_Xs:
-    Pt > $pool
+    
+Pt_absorbed_onto_Xl:
+    Xl + Pt > Xl
     Ki*Xs*Pt
 
 ######################### Xi
 death_Xi:
     Xi > $pool
     Xi*D
-
+    
+lysis_of_Xi:
+    Xi > {98}P
+    Xi*(1/0.5) #Lysis rate is cells/hr
 
 
 # Variable species
 S = 10.0
-Xi = 0
+Xi = 1000
 Xs = 1.0e4
 Xl = 0
 P = 1.0e2

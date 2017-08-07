@@ -18,9 +18,9 @@ lysis_of_Xi:
     Xi > {98}P
     2
 
-#washout_P:
-#    P > $pool
-#    P*D
+washout_P:
+   P > $pool
+   P*D
     
 #deactivation_of_P:
 #    P > $pool

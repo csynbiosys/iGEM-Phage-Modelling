@@ -3,7 +3,7 @@ from scipy import *
 from numpy import *
 import matplotlib.pyplot as plt
 
-smod = stochpy.SSA(model_file='campbell_model.psc', dir='data')
-smod.DoStochSim(quiet=False, end=10.0, mode='time')
+smod = stochpy.SSA(model_file='campbell_model_bradley.psc', dir='data')
+smod.DoStochSim(quiet=False, end=5.0, mode='time')
 smod.PlotSpeciesTimeSeries()
 stochpy.plt.yscale('log')
