@@ -3,28 +3,28 @@
 ######################### Xs
 growth_Xs:
     Xs > Xs + Xs
-    Xs*u*(1-Xs/C)
+    Xs*1/u*(1-Xs/C) # Growth of the cells
 
-washout_Xs:
-    Xs > $pool
-    Xs*D
+#washout_Xs:
+#    Xs > $pool
+#    Xs*1/D
 
 infection_by_P:
-    Xs + P > Xi #Typo: Xs + P > Xs changed to Xs + P > Xi
-    Xs*P*Ki #Rate of infection is dependent on Xs and P
+    Xs + P > Xi 
+    1/(Xs*P*Ki) # Rate of infection
 
 
 lysis_of_Xi:
     Xi > {98}P
-    Xi*(1/T) #Lysis rate is cells/hr
+    Xi*(1/T) # Lysis rate is cells/hr
 
-washout_P:
-    P > $pool
-    P*D
+#washout_P:
+#    P > $pool
+#    P*1/D
     
-deactivation_of_P:
-    P > $pool
-    P*dp
+#deactivation_of_P:
+#    P > $pool
+#    P*1/dp
     
 ######################### Xi
 #washout_Xi:
@@ -35,8 +35,8 @@ deactivation_of_P:
 
 # Variable species
 Xi = 1000   # cells/ml
-Xs = (1.0e4) * 5    # cells/ml
-P = (1.0e5) * 5   # particles/ml
+Xs = 1.0e2 # cells/ml
+P = 1.0e3   # particles/ml
 
 # Parameters
 #Na = 6.02e23  # mol-1
