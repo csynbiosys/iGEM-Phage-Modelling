@@ -3,7 +3,6 @@ from scipy import *
 from numpy import *
 import PyDDE.pydde as p
 import matplotlib.pyplot as plt
-import mpl_toolkits.axisartist as AA
 
 # Setting initial values
 u = 0.738 # h-1 (Levin et al., 1977)
@@ -21,7 +20,7 @@ Pt0 = 1.0e6 # particles/ml of temperate phage
 Xl = 0 # no lysogenic bacteria present at the start
 Xi = 0 # no lytic bacteria present at the start
 
-sim_length = 20.0 # set the simulation length time
+sim_length = 250.0 # set the simulation length time
 plyt_added = 5.0 # time after start when lytic phage is added
 
 dde_camp = p.dde()
@@ -112,7 +111,7 @@ p, = plt.plot(dde_camp2.data[:, 0], dde_camp2.data[:, 4], "r:",  label=r'$P$') #
 xl, = plt.plot(concatenate((dde_camp.data[:, 0], dde_camp2.data[:, 0])), concatenate((dde_camp.data[:, 5],dde_camp2.data[:, 5])),  label=r'$X_L$')
 pt, = plt.plot(concatenate((dde_camp.data[:, 0], dde_camp2.data[:, 0])), concatenate((dde_camp.data[:, 6],dde_camp2.data[:, 6])), "r--", label=r'$P_T$')
 
-f_size = 12 # set font size for plot labels
+f_size = 15 # set font size for plot labels
 plt.xlabel('Time (hours)', fontsize=f_size)
 plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
@@ -129,7 +128,8 @@ plt2.set_yticks(linspace(0,S0, 3))
 plt2.tick_params(axis='both', labelsize=f_size)
 
 # Join legends from two separate plots into one
-p = [xs, xi,p,xl,pt,s]
-plt.legend(p, [p_.get_label() for p_ in p],loc='lower left', fontsize= 'small', prop={'size': f_size})
+p = [xs,xi,p,xl,pt,s]
+plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
+plt.tight_layout()
 #plt.show()
-plt.savefig('foo.pdf')
+plt.savefig('Model Continuous Final.pdf')
