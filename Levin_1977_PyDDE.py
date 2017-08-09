@@ -56,31 +56,36 @@ ddeist = array([ddecons[1], Xs0, 0, P0]) #changed S0 from 100
 # Setting a state-scaling array for use in error control when values are very close to 0
 ddestsc = array([0,0,0,0])
 
-# Short version (not used)
-#dde_camp.dde(y=ddeist, times=arange(0.0, 250.0, 1.0),
-#           func=ddegrad, parms=ddecons,
-#           tol=0.000005, dt=1.0, hbsize=10000, nlag=1, ssc=ddestsc)
-
 # Long version
 dde_camp.initproblem(no_vars=4, no_cons=8, nlag=1, nsw=0, t0=0.0, t1=sim_length, initstate=ddeist, c=ddecons, otimes= arange(0.0, sim_length, 0.1), grad=ddegrad, storehistory=ddesthist)
-
 dde_camp.initsolver(tol=0.000005, hbsize=1000, dt=1.0, statescale=ddestsc)
-
 dde_camp.solve()
 
-print(dde_camp.data)
+# Plot figures
+plt.style.use('ggplot') # set the global style
+xs, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$X_S$')
+xi, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'$X_I$')
+p, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 4], "r:", label=r'$P$')
 
-#plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'$S$')
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$X_S$')
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'$X_I$')
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 4], "r:", label=r'$P$')
-plt.legend()
-plt.xlabel('Time (hours)')
-plt.ylabel('Log concentration (particles/ml)')
+f_size = 15 # set font size for plot labels
+plt.xlabel('Time (hours)', fontsize=f_size)
+plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
-plt.axis([-5,sim_length,-100,10000000000])
-plt.tick_params(
-    axis='both', # changes apply to both axis
-    labelsize=12) # set new font size
+plt.axis([0,sim_length,1.0e-4,1.0e10])
+#plt.text(sim_length*0.8,2.0e9,'$S$= '+str(S0)) # display parameters
+plt.tick_params(axis='both', labelsize=f_size)
+
+# Plot substrate on the second y axis on top of the preivous figure
+plt2 = plt.twinx()
+plt2.grid(False)
+s, = plt2.plot(dde_camp.data[:, 0], dde_camp.data[:, 1], 'black', label=r'$S$')
+plt2.set_ylabel(r'Substrate (${\mu}$g/ml)', fontsize=f_size)
+plt2.set_yticks(linspace(0,S0, 3))
+plt2.tick_params(axis='both', labelsize=f_size)
+
+# Join legends from two separate plots into one
+p = [xs,xi,p,s]
+plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
-plt.show()
+#plt.show()
+plt.savefig('Levin_PyDDE.pdf')
