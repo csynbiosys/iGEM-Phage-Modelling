@@ -52,25 +52,32 @@ ddestsc = array([0,0])
 
 # Long version
 dde_camp.initproblem(no_vars=2, no_cons=8, nlag=1, nsw=0, t0=0.0, t1=sim_length, initstate=ddeist, c=ddecons, otimes= arange(0.0, sim_length, 0.1), grad=ddegrad, storehistory=ddesthist)
-
 dde_camp.initsolver(tol=0.000005, hbsize=1000, dt=1.0, statescale=ddestsc)
-
 dde_camp.solve()
 
-print(dde_camp.data)
 
-f_size = 14 # set size for plot labels
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$X_S$')
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'$S$')
+# Plot figures
+plt.style.use('ggplot') # set the global style
+xs, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2], '#398aba',  label=r'$X_S$')
 
-
-plt.legend(prop={'size': f_size})
+f_size = 15 # set font size for plot labels
 plt.xlabel('Time (hours)', fontsize=f_size)
 plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
-plt.axis([-5,sim_length, 1.0e0,1.0e10])
-plt.tick_params(
-    axis='both', # changes apply to both axis
-    labelsize=f_size) # set new font size
+plt.axis([0,sim_length,0,1.0e10])
+plt.tick_params(axis='both', labelsize=f_size)
+
+# Plot substrate on the second y axis on top of the preivous figure
+plt2 = plt.twinx()
+plt2.grid(False)
+s, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'$S$')
+plt2.set_ylabel(r'Substrate (${\mu}$g/ml)', fontsize=f_size)
+plt2.set_yticks(linspace(0,S0, 3))
+plt2.tick_params(axis='both', labelsize=f_size)
+
+# Join legends from two separate plots into one
+p = [xs,s]
+plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
-plt.show()
+#plt.show()
+plt.savefig('Kumada_with_growth_1985.pdf')
