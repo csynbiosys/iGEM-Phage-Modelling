@@ -5,13 +5,13 @@ import PyDDE.pydde as p
 import matplotlib.pyplot as plt
 
 # Setting initial values
-u = 0.738 # h-1 (Levin et al., 1977)
+u = 7.38 # h-1 (Levin et al., 1977)
 S0 = 30.0 # ug/ml(Levin et al., 1977)
 D = 0.20 # h-1  #(Levin et al., 1977)
 Ki = 6.24e-8 # ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
 Km = 4.0 # ug/ml (Levin et al., 1977)
-Y = 3.85e5 #(Levin et al., 1977)
+Y = 7.4e4 #(Levin et al., 1977)
 T = 0.5 # h-1 (Levin et al., 1977)
 Xs0 = 1.0e4 # cells/ml starting levels of cells (Levin et al., 1977)
 P0 = 1.0e6 # particles/ml starting levels of cells (Levin et al., 1977)
@@ -88,4 +88,4 @@ p = [xs,p]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
 #plt.show()
-plt.savefig('Levin_PyDDE.pdf')
+plt.savefig('Levin2_PyDDE.pdf')
