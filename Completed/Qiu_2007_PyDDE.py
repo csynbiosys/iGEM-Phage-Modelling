@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Setting initial values
 u = 0.738 # h-1 (Levin et al., 1977)
-S0 = 8.0 # ug/ml(Levin et al., 1977)
+S0 = 2.0 # ug/ml(Levin et al., 1977)
 D = 0.20 # h-1 (Levin et al., 1977)
 Ki = 6.24e-8 #ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
@@ -66,7 +66,7 @@ dde_camp.solve()
 plt.style.use('ggplot') # set the global style
 pt, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 4], "--", label=r'$P_T$')
 xs, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$X_S$')
-xl, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'$X_L$')
+#xl, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'$X_L$')
 
 f_size = 15 # set font size for plot labels
 plt.xlabel('Time (hours)', fontsize=f_size)
@@ -85,8 +85,8 @@ plt.tick_params(axis='both', labelsize=f_size)
 # plt2.tick_params(axis='both', labelsize=f_size)
 
 # Join legends from two separate plots into one
-p = [xs,xl,pt]
+p = [xs,pt]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
 #plt.show()
-plt.savefig('Qiu8_PyDDE.pdf')
+plt.savefig('Qiu2_PyDDE.pdf')
