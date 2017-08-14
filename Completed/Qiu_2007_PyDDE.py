@@ -6,18 +6,18 @@ import matplotlib.pyplot as plt
 
 # Setting initial values
 u = 0.738 # h-1 (Levin et al., 1977)
-S0 = 30.0 # ug/ml(Levin et al., 1977)
+S0 = 16.0 # ug/ml(Levin et al., 1977)
 D = 0.20 # h-1 (Levin et al., 1977)
 Ki = 6.24e-8 #ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
 Km = 4.0 # ug/ml (Levin et al., 1977)
 Y = 3.85e5 #(Levin et al., 1977)
-q = 0.001 # induction rate (Qiu, 2007)
+q = 0.35 # induction rate (Qiu, 2007)
 T = 0.0 # no time latency
 Xs0 = 1.0e4 # cells/ml starting levels of cells (Levin et al., 1977)
 P0 = 1.0e6 # particles/ml starting levels of cells (Levin et al., 1977)
 
-sim_length = 250.0 # set the simulation length time
+sim_length = 1000.0 # set the simulation length time
 
 dde_camp = p.dde()
 
@@ -53,7 +53,7 @@ def ddesthist(g, s, c, t):
 # Setting constants
 ddecons = array([u,S0,D,Ki,b,Km,Y,q,T])
 # Setting initial conditions S, Xs, Xi, P
-ddeist = array([ddecons[1], Xs0, 0, P0]) #changed S0 from 100
+ddeist = array([ddecons[1], Xs0, 0, P0])
 # Setting a state-scaling array for use in error control when values are very close to 0
 ddestsc = array([0,0,0,0])
 
@@ -64,29 +64,29 @@ dde_camp.solve()
 
 # Plot figures
 plt.style.use('ggplot') # set the global style
+pt, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 4], "--", label=r'$P_T$')
 xs, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$X_S$')
 xl, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'$X_L$')
-pt, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 4], "r--", label=r'$P_T$')
 
 f_size = 15 # set font size for plot labels
 plt.xlabel('Time (hours)', fontsize=f_size)
 plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
-plt.axis([0,sim_length,1.0e-4,1.0e10])
+plt.axis([0,sim_length,0.0e-4,1.0e10])
 #plt.text(sim_length*0.8,2.0e9,'$S$= '+str(S0)) # display parameters
 plt.tick_params(axis='both', labelsize=f_size)
 
 # Plot substrate on the second y axis on top of the preivous figure
-plt2 = plt.twinx()
-plt2.grid(False)
-s, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1], 'black', label=r'$S$')
-plt2.set_ylabel(r'Substrate (${\mu}$g/ml)', fontsize=f_size)
-plt2.set_yticks(linspace(0,S0, 3))
-plt2.tick_params(axis='both', labelsize=f_size)
+# plt2 = plt.twinx()
+# plt2.grid(False)
+# s, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1], 'black', label=r'$S$')
+# plt2.set_ylabel(r'Substrate (${\mu}$g/ml)', fontsize=f_size)
+# plt2.set_yticks(linspace(0,S0, 3))
+# plt2.tick_params(axis='both', labelsize=f_size)
 
 # Join legends from two separate plots into one
-p = [xs,xl,pt,s]
+p = [xs,xl,pt]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
 #plt.show()
-plt.savefig('Qiu_PyDDE.pdf')
+plt.savefig('Qiu16_PyDDE.pdf')
