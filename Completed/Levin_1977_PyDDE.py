@@ -63,28 +63,28 @@ dde_camp.solve()
 
 # Plot figures
 plt.style.use('ggplot') # set the global style
-xs, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$X_S$')
-xi, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'$X_I$')
-p, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 4], "r:", label=r'$P$')
+p, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 4], ":", label=r'$P$')
+xs, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2], label=r'$X_S$')
+#xi, = plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 3],  label=r'$X_I$')
 
 f_size = 15 # set font size for plot labels
 plt.xlabel('Time (hours)', fontsize=f_size)
 plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
-plt.axis([0,sim_length,1.0e-4,1.0e10])
+plt.axis([0,sim_length,0.0e-4,1.0e10])
 #plt.text(sim_length*0.8,2.0e9,'$S$= '+str(S0)) # display parameters
 plt.tick_params(axis='both', labelsize=f_size)
 
 # Plot substrate on the second y axis on top of the preivous figure
-plt2 = plt.twinx()
-plt2.grid(False)
-s, = plt2.plot(dde_camp.data[:, 0], dde_camp.data[:, 1], 'black', label=r'$S$')
-plt2.set_ylabel(r'Substrate (${\mu}$g/ml)', fontsize=f_size)
-plt2.set_yticks(linspace(0,S0, 3))
-plt2.tick_params(axis='both', labelsize=f_size)
+# plt2 = plt.twinx()
+# plt2.grid(False)
+# s, = plt2.plot(dde_camp.data[:, 0], dde_camp.data[:, 1], 'black', label=r'$S$')
+# plt2.set_ylabel(r'Substrate (${\mu}$g/ml)', fontsize=f_size)
+# plt2.set_yticks(linspace(0,S0, 3))
+# plt2.tick_params(axis='both', labelsize=f_size)
 
 # Join legends from two separate plots into one
-p = [xs,xi,p,s]
+p = [xs,p]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
 #plt.show()

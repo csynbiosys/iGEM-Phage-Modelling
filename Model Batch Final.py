@@ -6,28 +6,30 @@ import matplotlib.pyplot as plt
 
 # Setting initial values
 u = 0.738 # h-1 (Levin et al., 1977)
-S0 = 30.0 # ug/ml(Levin et al., 1977)
-D = 0.20 # h-1 dilution rate
+S0 = 100.0 # ug/ml(Levin et al., 1977)
+D = 0.20 # h-1  HERE USED AS COMMON DEATH RATE FOR BACTERIA   ? ? ? ? ?
 Ki = 6.24e-8 # ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
 Km = 4.0 # ug/ml(Levin et al., 1977)
 Y = 3.85e5 # (Levin et al., 1977)
 T = 0.5 #h-1 (Levin et al., 1977)
-Xs0 = 1.0e4 # cells/ml starting concentration of cells (Levin et al., 1977)
-P0 = 0 # particles/ml starting concentration of cells (Levin et al., 1977)
-q = 0.35 # induction rate (Qiu, 2007)
+Xs0 = 1.0e4 # cells/ml starting levels of cells (Levin et al., 1977)
+P0 = 0 # particles/ml starting levels of cells (Levin et al., 1977)
+q = 0.35# induction rate (...)
 Pt0 = 1.0e6 # particles/ml of temperate phage
 Xl = 0 # no lysogenic bacteria present at the start
 Xi = 0 # no lytic bacteria present at the start
 
-sim_length = 25.0 # set the simulation length time
+sim_length = 20.0 # set the simulation length time
 plyt_added = 5.0 # time after start when lytic phage is added
 
 dde_camp = p.dde()
 dde_camp2 = p.dde()
 
+Xs_extinction = []
+
 # Defining the gradient function
-# s - state(Xs,P,Xl,etc), c - constant(ddecons), t - time
+# s - state(Xs or P?), c - constant(ddecons), t - time
 def ddegrad(s, c, t):
     Xslag = 0.0
     Plag = 0.0
@@ -44,25 +46,28 @@ def ddegrad(s, c, t):
     g = array([0.0,0.0,0.0,0.0,0.0,0.0])
 
     # s[0] = S(t), s[1] = Xs(t), s[2] = Xi(t), s[3] = P(t), s[4] = Xl(t), s[5] = Pt(t)
-    # S = D*(S0-S)  - Xs*u*S/(Km+S)*(1/Y) - Xi*u*S/(Km+S)*(1/Y) - Xl*u*S/(Km+S)*(1/Y)
-    g[0] = c[2]*(c[1]-s[0]) - s[1]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[2]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[4]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6])
-    # Xs = Xs*u*S/(Km+S) - Ki*Xs*P - Ki*Xs*Pt - D*Xs
-    g[1] = s[1]*c[0]*s[0]/(c[5]+s[0]) - c[3]*s[1]*s[3] - c[3]*s[1]*s[5] - c[2]*s[1]
-    # Xi = Ki*Xs*P - D*Xi - exp(-D*T)*Ki*Xs(t-T)P(t-T)
+    # S = - Xs*u*S/(Km+S)*(1/Y) - Xi*u*S/(Km+S)*(1/Y) - Xl*u*S/(Km+S)*(1/Y)
+    g[0] = - s[1]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[2]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[4]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6])
+    # Xs = Xs*u*S/(Km+S)*(1/Y) - Ki*Xs*P - Ki*Xs*Pt
+    g[1] = s[1]*c[0]*s[0]/(c[5]+s[0]) - c[3]*s[1]*s[3] - c[3]*s[1]*s[5]
+    # Xi = Ki*Xs*P - Ki*Xs(t-T)P(t-T)
     g[2] = 0
-    # P = b*exp(-D*T)*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - D*P
+    # P = b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P
     g[3] = 0
     if (t>plyt_added): # after plyt_added hours lytic phage is added
-        # Xi = Ki*Xs*P - D*Xi - exp(-D*T)*Ki*Xs(t-T)P(t-T)
-        g[2] = c[3]*s[1]*s[3] - c[2]*s[2] - exp(-c[2]*c[7])*c[3]*Xslag*Plag
-        # P = exp(-D*T)*b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - Ki*Xl*P - Ki*Xi*P - D*P
-        g[3] = exp(-c[2]*c[7])*c[4]*c[3]*Xslag*Plag - c[3]*s[1]*s[3] - c[3]*s[4]*s[3] - c[3]*s[2]*s[3] - c[2]*s[3]
-    # Xl = Xl*u*S/(Km+S) + Ki*Xs*Pt - q*exp(-D*T)*Xl(t-T) - -D*Xl
-    g[4] = s[4]*(c[0]*s[0])/(c[5]+s[0]) + c[3]*s[1]*s[5] -c[8]*exp(-c[2]*c[7])*Xllag -c[2]*s[4]
-    # Pt = b*q*exp(-D*T)*Xl(t-T)  - Ki*Xs*Pt - Ki*Xl*Pt - Ki*Xi*Pt - D*Pt
-    g[5] = c[4]*c[8]*exp(-c[2]*c[7])*Xllag - c[3]*s[1]*s[5] - c[3]*s[4]*s[5] - c[3]*s[2]*s[5] - c[2]*s[5]
+        # Xi = Ki*Xs*P - Ki*Xs(t-T)P(t-T)
+        g[2] = c[3]*s[1]*s[3] - c[3]*Xslag*Plag
+        if ((Xslag < 1.0e-8 or Plag < 1.0e-8) and Xslag != 0 and s[2] != 0):
+            #print('Xs of P has died at ' + str(Xslag) + ' at t= ' + str(t))
+            Xs_extinction.append(t)
+            g[2] = c[3]*s[1]*s[3] - c[3]*Xslag*Plag
+        # P = b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - Ki*Xl*P - Ki*Xi*P
+        g[3] = c[4]*c[3]*Xslag*Plag - c[3]*s[1]*s[3] - c[3]*s[4]*s[3] - c[3]*s[2]*s[3]
+    # Xl = Xl*u*S/(Km+S) + Ki*Xs*Pt - q*Xl(t-T)
+    g[4] = s[4]*(c[0]*s[0])/(c[5]+s[0]) + c[3]*s[1]*s[5] -c[8]*Xllag
+    # Pt = b*q*Xl(t-T)  - Ki*Xs*Pt - Ki*Xl*Pt - Ki*Xi*Pt
+    g[5] = c[4]*c[8]*Xllag - c[3]*s[1]*s[5] - c[3]*s[4]*s[5] - c[3]*s[2]*s[5]
     return g
-
 
 # Definte function to store history variables: state and gradient
 def ddesthist(g, s, c, t):
@@ -99,8 +104,9 @@ dde_camp2.initsolver(tol=0.000005, hbsize=10000, dt=1.0, statescale=ddestsc)
 dde_camp2.solve()
 
 # Print values at the joining point between two simulations
-# print(dde_camp.data[:, 5][-1])
-# print(dde_camp2.data[:, 5][1])
+# print('At t= ' + str(dde_camp.data[:, 0][-1]) + ', Xs =' + str(dde_camp.data[:, 2][-1]))
+# print('At t= ' + str(dde_camp2.data[:, 0][0]) + ', Xs =' +str(dde_camp2.data[:, 2][0]))
+print('Xs died at t= ' + str(Xs_extinction[1]))
 
 # Plot figures
 plt.style.use('ggplot') # set the global style
@@ -115,7 +121,7 @@ plt.xlabel('Time (hours)', fontsize=f_size)
 plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
 plt.axis([0,sim_length,1.0e-4,1.0e10])
-#plt.text(sim_length*0.8,2.0e9,'$S$= '+str(S0)) # display parameters
+plt.text(sim_length*0.2,8.0e8,'$P(t)$= '+str(plyt_added)+' h', fontsize=f_size) # display parameters
 plt.tick_params(axis='both', labelsize=f_size)
 
 # Plot substrate on the second y axis on top of the preivous figure
@@ -131,4 +137,4 @@ p = [xs,xi,p,xl,pt,s]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
 plt.show()
-plt.savefig('Model Continuous Final.pdf')
+plt.savefig('Model Batch Final.pdf')

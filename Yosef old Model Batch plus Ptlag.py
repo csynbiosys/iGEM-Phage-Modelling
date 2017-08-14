@@ -5,23 +5,25 @@ import PyDDE.pydde as p
 import matplotlib.pyplot as plt
 
 # Setting initial values
-u = 0.738 # h-1 (Levin et al., 1977)
-S0 = 30.0 # ug/ml(Levin et al., 1977)
+u = 0.568 # h-1 for L-arabinose (Aidelberg et al., 2014)
+S0 = 2000.0 # ug/ml = 0.2% L-arabinose
 D = 0.20 # h-1 dilution rate
 Ki = 6.24e-8 # ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
-Km = 4.0 # ug/ml(Levin et al., 1977)
+Km = 4.0*5 # ug/ml for L-arabinose (Meyenburg, 1971)
 Y = 3.85e5 # (Levin et al., 1977)
 T = 0.5 #h-1 (Levin et al., 1977)
 Xs0 = 1.0e4 # cells/ml starting levels of cells (Levin et al., 1977)
 P0 = 0 # particles/ml starting levels of cells (Levin et al., 1977)
-q = 1.0e-4 # induction rate (...)
-Pt0 = 1.0e6 # particles/ml of temperate phage
+q = 0.35 # induction rate (...)
+Pt0 = 1.0e5 # particles/ml of temperate phage
 Xl = 0 # no lysogenic bacteria present at the start
 Xi = 0 # no lytic bacteria present at the start
 
-sim_length = 20.0 # set the simulation length time
-plyt_added = 5.0 # time after start when lytic phage is added
+V = 3.0 # ml
+
+sim_length = 39.0 # set the simulation length time
+plyt_added = 1.0 # time after start when lytic phage is added
 
 dde_camp = p.dde()
 dde_camp2 = p.dde()
@@ -34,7 +36,7 @@ def ddegrad(s, c, t):
     Ptlag = 0.0
 
     if (t>c[7] and t<plyt_added): # if t > T for lysogenic phage
-        Xslag = p.pastvalue(1,t-c[7],0)    
+        Xslag = p.pastvalue(1,t-c[7],0)
         Ptlag = p.pastvalue(5, t - c[7], 0)
 
     if (t>(c[7]+plyt_added)): # if t > T for both phages
@@ -45,23 +47,23 @@ def ddegrad(s, c, t):
     g = array([0.0,0.0,0.0,0.0,0.0,0.0])
 
     # s[0] = S(t), s[1] = Xs(t), s[2] = Xi(t), s[3] = P(t), s[4] = Xl(t), s[5] = Pt(t)
-    # S = D*(S0-S)  - Xs*u*S/(Km+S)*(1/Y) - Xi*u*S/(Km+S)*(1/Y) - Xl*u*S/(Km+S)*(1/Y)
-    g[0] = c[2]*(c[1]-s[0]) - s[1]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[2]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[4]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6])
+    # S = - Xs*u*S/(Km+S)*(1/Y) - Xi*u*S/(Km+S)*(1/Y) - Xl*u*S/(Km+S)*(1/Y)
+    g[0] = - s[1]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[2]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6]) - s[4]*(c[0]*s[0])/(c[5]+s[0])*(1/c[6])
     # Xs = Xs*u*S/(Km+S) - Ki*Xs*P - Ki*Xs*Pt - D*Xs
-    g[1] = s[1]*c[0]*s[0]/(c[5]+s[0]) - c[3]*s[1]*s[3] - c[3]*s[1]*s[5] - c[2]*s[1]
+    g[1] = s[1]*c[0]*s[0]/(c[5]+s[0]) - c[3]*s[1]*s[3] - c[3]*s[1]*s[5] #- c[2]*s[1]
     # Xi = Ki*Xs*P - D*Xi - exp(-D*T)*Ki*Xs(t-T)P(t-T)
     g[2] = 0
     # P = b*exp(-D*T)*Ki*Xs(t-T)P(t-T) - Ki*Xs*P
     g[3] = 0
     if (t>plyt_added): # after plyt_added hours lytic phage is added
-        # Xi = Ki*Xs*P - D*Xi - exp(-D*T)*Ki*Xs(t-T)P(t-T)
-        g[2] = c[3]*s[1]*s[3] - c[2]*s[2] - exp(-c[2]*c[7])*c[3]*Xslag*Plag
-        # P = exp(-D*T)*b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - Ki*Xl*P - D*P
-        g[3] = exp(-c[2]*c[7])*c[4]*c[3]*Xslag*Plag - c[3]*s[1]*s[3] - c[3]*s[4]*s[3] - c[2]*s[3]
-    # Xl = Xl*u*S/(Km+S) + Ki*Xs*Pt - q*exp(-D*T)*Ki*Xs(t-T)Pt(t-T) - -D*Xl
-    g[4] = s[4]*(c[0]*s[0])/(c[5]+s[0]) + c[3]*s[1]*s[5] -c[8]*exp(-c[2]*c[7])*c[3]*Xslag*Ptlag -c[2]*s[4]
-    # Pt = b*q*exp(-D*T)*Ki*Xs(t-T)Pt(t-T)  - Ki*Xs*Pt
-    g[5] = c[4]*c[8]*exp(-c[2]*c[7])*c[3]*Xslag*Ptlag - c[3]*s[1]*s[5] - c[2]*s[5] # c[8]*exp(-c[2]*c[7])*c[3]*Xslag*Ptlag
+        # Xi = Ki*Xs*P - D*Xi - Ki*Xs(t-T)P(t-T)
+        g[2] = c[3]*s[1]*s[3] - c[3]*Xslag*Plag #- c[2]*s[2]
+        # P = b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - Ki*Xl*P - D*P
+        g[3] = c[4]*c[3]*Xslag*Plag - c[3]*s[1]*s[3] - c[3]*s[4]*s[3] #- c[2]*s[3]
+    # Xl = Xl*u*S/(Km+S) + Ki*Xs*Pt - q*Ki*Xs(t-T)Pt(t-T) - -D*Xl
+    g[4] = s[4]*(c[0]*s[0])/(c[5]+s[0]) + c[3]*s[1]*s[5] -c[8]*c[3]*Xslag*Ptlag #-c[2]*s[4]
+    # Pt = b*q*Ki*Xs(t-T)Pt(t-T)  - Ki*Xs*Pt
+    g[5] = c[4]*c[8]*c[3]*Xslag*Ptlag - c[3]*s[1]*s[5] #- c[2]*s[5] # c[8]*exp(-c[2]*c[7])*c[3]*Xslag*Ptlag
     #print('Ptlag= ' + str(Ptlag))
     return g
 
@@ -93,7 +95,7 @@ dde_camp.solve()
 S = dde_camp.data[:, 1][-1]
 Xs0 = dde_camp.data[:, 2][-1]
 Xi = dde_camp.data[:, 3][-1]
-P0 = 1.0e4 # introduction of P lytic
+P0 = 1.83e5 # particles/ml introduction of P lytic
 Xl = dde_camp.data[:, 5][-1]
 Pt0 = dde_camp.data[:, 6][-1]
 # Setting initial conditions S, Xs, Xi, P, Xl, Pt
@@ -106,9 +108,10 @@ dde_camp2.initsolver(tol=0.000005, hbsize=10000, dt=1.0, statescale=ddestsc)
 dde_camp2.solve()
 
 # Print test values between
-print(dde_camp.data[:, 5][-1])
-print(dde_camp2.data[:, 5][1])
-#
+# print(dde_camp.data[:, 5][-1])
+# print(dde_camp2.data[:, 5][1])
+print('Final P= ' + str(dde_camp2.data[:, 4][-1]))
+print('Final Xl= ' + str(dde_camp2.data[:, 5][-1]))
 
 plt.plot(concatenate((dde_camp.data[:, 0], dde_camp2.data[:, 0])), concatenate((dde_camp.data[:, 1],dde_camp2.data[:, 1])),  label=r'$S$')
 plt.plot(concatenate((dde_camp.data[:, 0], dde_camp2.data[:, 0])), concatenate((dde_camp.data[:, 2],dde_camp2.data[:, 2])),  label=r'$X_S$')
