@@ -44,16 +44,14 @@ ddestsc = array([0,0])
 
 # Long version
 dde_camp.initproblem(no_vars=2, no_cons=8, nlag=1, nsw=0, t0=0.0, t1=sim_length, initstate=ddeist, c=ddecons, otimes= arange(0.0, sim_length, 20.0), grad=ddegrad, storehistory=ddesthist)
-
 dde_camp.initsolver(tol=0.000005, hbsize=1000, dt=1.0, statescale=ddestsc)
-
 dde_camp.solve()
 
-print(dde_camp.data)
-
-f_size = 14 # set size for plot labels
+# Plot figures
+plt.style.use('ggplot') # set the global style
+f_size = 15 # set size for plot labels
 #plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 1],  label=r'$S$')
-plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2],  label=r'$X_S$')
+plt.plot(dde_camp.data[:, 0], dde_camp.data[:, 2], '#398aba', label=r'$X_S$')
 
 plt.legend(prop={'size': f_size})
 plt.xlabel('Time (hours)', fontsize=f_size)
@@ -64,4 +62,5 @@ plt.tick_params(
     axis='both', # changes apply to both axis
     labelsize=f_size) # set new font size
 plt.tight_layout()
-plt.show()
+#plt.show()
+plt.savefig('Kumada_Orig_1985.pdf')
