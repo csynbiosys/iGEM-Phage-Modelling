@@ -14,7 +14,7 @@ a = 0.22 # death related constant (Kumada et al., 1985)
 k = -2.0e-4 # death related constant (Kumada et al., 1985)
 C = 7.0e9 # max carrying capacity (OD600=7)
 
-sim_length = 250.0 # set the simulation length time
+sim_length = 2500.0 # set the simulation length time
 
 dde_camp = p.dde()
 
@@ -31,7 +31,7 @@ def ddegrad(s, c, t):
     if (s[0] < 1/c[6] or s[1]>c[7]):
         # cells start to die
         # X = k*X**(a+1)
-        g[1] = (c[2]*s[1]**c[3])*s[1]
+        g[1] = c[2]*s[1]**(c[3]+1)
     else:
         # cells grow normally
         # X = Xs*u*S/(Km+S)
@@ -79,5 +79,5 @@ plt2.tick_params(axis='both', labelsize=f_size)
 p = [xs,s]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
-#plt.show()
-plt.savefig('Kumada_with_growth_1985.pdf')
+plt.show()
+#plt.savefig('Kumada_with_growth_1985.pdf')
