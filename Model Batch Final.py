@@ -109,17 +109,15 @@ dde_camp2.solve()
 Xs_extinct = Xs_extinction_times[0]
 print('Xs went extinct at t= ' + str(Xs_extinct))
 
+# Calculation of average concentration
+def get_avg(values):
+    less = values > 1.0e-15 # select only values above threshold
+    return values[less].sum()/len(values[less])
 
-# Calculate average concentration of Xs
-conc_sum = concatenate((dde_camp.data[:, 2],dde_camp2.data[:, 2]))
-less = conc_sum > 1.0e-15 # select only values above threshold
-xs_avg = conc_sum[less].sum()/len(conc_sum[less])
+# Calculation of r value (ratio of xi/xs)
+xs_avg = get_avg(concatenate((dde_camp.data[:, 2],dde_camp2.data[:, 2])))
 print('Average Xs = ' + str(xs_avg))
-
-# Calculate average concentration of Xi
-inf_conc = concatenate((dde_camp.data[:, 3],dde_camp2.data[:, 3]))
-nonzero = inf_conc != 0 # select non-zero values
-xi_avg = inf_conc[nonzero].sum() / len(inf_conc[nonzero])
+xi_avg = get_avg(concatenate((dde_camp.data[:, 3],dde_camp2.data[:, 3])))
 print('Average Xi = ' + str(xi_avg))
 xixs_ratio = round(xi_avg/xs_avg, 4)
 print('Xi/Xs ratio is ' + str(xixs_ratio))
