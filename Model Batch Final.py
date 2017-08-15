@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Setting initial values
 u = 0.738 # h-1 (Levin et al., 1977)
-S0 = 100.0 # ug/ml(Levin et al., 1977)
+S0 = 30.0 # ug/ml(Levin et al., 1977)
 D = 0.20 # h-1  HERE USED AS COMMON DEATH RATE FOR BACTERIA   ? ? ? ? ?
 Ki = 6.24e-8 # ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
@@ -26,7 +26,7 @@ plyt_added = 5.0 # time after start when lytic phage is added
 dde_camp = p.dde()
 dde_camp2 = p.dde()
 
-Xs_extinction = []
+Xs_extinction_times = [] # stores times once Xs goes below 1.0e-15
 
 # Defining the gradient function
 # s - state(Xs or P?), c - constant(ddecons), t - time
@@ -57,9 +57,9 @@ def ddegrad(s, c, t):
     if (t>plyt_added): # after plyt_added hours lytic phage is added
         # Xi = Ki*Xs*P - Ki*Xs(t-T)P(t-T)
         g[2] = c[3]*s[1]*s[3] - c[3]*Xslag*Plag
-        if ((Xslag < 1.0e-8 or Plag < 1.0e-8) and Xslag != 0 and s[2] != 0):
+        if (Xslag < 1.0e-15 and Xslag != 0 and s[2] != 0):
             #print('Xs of P has died at ' + str(Xslag) + ' at t= ' + str(t))
-            Xs_extinction.append(t)
+            Xs_extinction_times.append(t)
             g[2] = c[3]*s[1]*s[3] - c[3]*Xslag*Plag
         # P = b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - Ki*Xl*P - Ki*Xi*P
         g[3] = c[4]*c[3]*Xslag*Plag - c[3]*s[1]*s[3] - c[3]*s[4]*s[3] - c[3]*s[2]*s[3]
@@ -106,7 +106,8 @@ dde_camp2.solve()
 # Print values at the joining point between two simulations
 # print('At t= ' + str(dde_camp.data[:, 0][-1]) + ', Xs =' + str(dde_camp.data[:, 2][-1]))
 # print('At t= ' + str(dde_camp2.data[:, 0][0]) + ', Xs =' +str(dde_camp2.data[:, 2][0]))
-print('Xs died at t= ' + str(Xs_extinction[1]))
+Xs_extinct = Xs_extinction_times[0]
+print('Xs went extinct at t= ' + str(Xs_extinct))
 
 # Plot figures
 plt.style.use('ggplot') # set the global style
@@ -121,8 +122,10 @@ plt.xlabel('Time (hours)', fontsize=f_size)
 plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
 plt.axis([0,sim_length,1.0e-4,1.0e10])
-plt.text(sim_length*0.2,8.0e8,'$P(t)$= '+str(plyt_added)+' h', fontsize=f_size) # display parameters
+#plt.text(sim_length*0.2,8.0e8,'$P(t)$= '+str(plyt_added)+' h', fontsize=f_size) # display parameters
+plt.text(Xs_extinct,1.5e10,'$t=$ ' + str(round(Xs_extinct,3)), fontsize=f_size) # display parameters
 plt.tick_params(axis='both', labelsize=f_size)
+plt.vlines(Xs_extinct, 0,1.0e10, linewidth=0.5)
 
 # Plot substrate on the second y axis on top of the preivous figure
 plt2 = plt.twinx()
@@ -136,5 +139,5 @@ plt2.tick_params(axis='both', labelsize=f_size)
 p = [xs,xi,p,xl,pt,s]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
-plt.show()
-plt.savefig('Model Batch Final.pdf')
+#plt.show()
+plt.savefig('Model Batch Final orig.pdf')
