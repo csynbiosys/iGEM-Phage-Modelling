@@ -21,7 +21,7 @@ Xl = 0 # no lysogenic bacteria present at the start
 Xi = 0 # no lytic bacteria present at the start
 
 sim_length = 20.0 # set the simulation length time
-plyt_added = 9.0 # time after start when lytic phage is added
+plyt_added = 11.0 # time after start when lytic phage is added
 
 dde_camp = p.dde()
 dde_camp2 = p.dde()
