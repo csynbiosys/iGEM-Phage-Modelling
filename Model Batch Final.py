@@ -20,8 +20,8 @@ Pt0 = 1.0e6 # particles/ml of temperate phage
 Xl = 0 # no lysogenic bacteria present at the start
 Xi = 0 # no lytic bacteria present at the start
 
-sim_length = 25.0 # set the simulation length time
-plyt_added = 22.0 # time after start when lytic phage is added
+sim_length = 20.0 # set the simulation length time
+plyt_added = 0.0 # time after start when lytic phage is added
 
 dde_camp = p.dde()
 dde_camp2 = p.dde()
@@ -145,7 +145,6 @@ plt.vlines(Xs_extinct, 0,1.0e10, linewidth=0.5)
 plt2 = plt.twinx()
 plt2.grid(False)
 s, = plt.plot(concatenate((dde_camp.data[:, 0], dde_camp2.data[:, 0])), concatenate((dde_camp.data[:, 1],dde_camp2.data[:, 1])), 'black',  label=r'$S$')
-plt.axis([0,20,0,30])
 plt2.set_ylabel(r'Substrate (${\mu}$g/ml)', fontsize=f_size)
 plt2.set_yticks(linspace(0,S0, 3))
 plt2.tick_params(axis='both', labelsize=f_size)
@@ -154,5 +153,5 @@ plt2.tick_params(axis='both', labelsize=f_size)
 p = [xs,xi,p,xl,pt,s]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
-#plt.show()
-plt.savefig('Batch Plyt_' + str(plyt_added) +' '+'S_'+ str(int(S0)) + '.pdf')
+plt.show()
+#plt.savefig('Batch Plyt_' + str(plyt_added) +' '+'S_'+ str(int(S0)) + '.pdf')
