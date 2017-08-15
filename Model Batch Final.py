@@ -60,12 +60,12 @@ def ddegrad(s, c, t):
         if (Xslag < 1.0e-15 and Xslag != 0 and s[2] != 0):
             # if concentration of Xs drops below 1.0e-15 add time to the array
             Xs_extinction_times.append(t)
-        # P = b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - Ki*Xl*P 
-        g[3] = c[4]*c[3]*Xslag*Plag - c[3]*s[1]*s[3] - c[3]*s[4]*s[3]
+        # P = b*Ki*Xs(t-T)P(t-T) - Ki*Xs*P - Ki*Xi*P
+        g[3] = c[4]*c[3]*Xslag*Plag - c[3]*s[1]*s[3] - c[3]*s[2]*s[3]
     # Xl = Xl*u*S/(Km+S) + Ki*Xs*Pt - q*Xl(t-T)
     g[4] = s[4]*(c[0]*s[0])/(c[5]+s[0]) + c[3]*s[1]*s[5] -c[8]*Xllag
-    # Pt = b*q*Xl(t-T)  - Ki*Xs*Pt - Ki*Xi*Pt
-    g[5] = c[4]*c[8]*Xllag - c[3]*s[1]*s[5] - c[3]*s[2]*s[5]
+    # Pt = b*q*Xl(t-T)  - Ki*Xs*Pt - Ki*Xl*Pt
+    g[5] = c[4]*c[8]*Xllag - c[3]*s[1]*s[5] - c[3]*s[4]*s[5]
     return g
 
 # Definte function to store history variables: state and gradient
@@ -139,4 +139,4 @@ p = [xs,xi,p,xl,pt,s]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
 #plt.show()
-plt.savefig('Model Batch Final no reinfection.pdf')
+plt.savefig('Model Batch Final no superinfection.pdf')
