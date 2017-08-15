@@ -109,6 +109,21 @@ dde_camp2.solve()
 Xs_extinct = Xs_extinction_times[0]
 print('Xs went extinct at t= ' + str(Xs_extinct))
 
+
+# Calculate average concentration of Xs
+conc_sum = concatenate((dde_camp.data[:, 2],dde_camp2.data[:, 2]))
+less = conc_sum > 1.0e-15 # select only values above threshold
+xs_avg = conc_sum[less].sum()/len(conc_sum[less])
+print('Average Xs = ' + str(xs_avg))
+
+# Calculate average concentration of Xi
+inf_conc = concatenate((dde_camp.data[:, 3],dde_camp2.data[:, 3]))
+nonzero = inf_conc != 0 # select non-zero values
+xi_avg = inf_conc[nonzero].sum() / len(inf_conc[nonzero])
+print('Average Xi = ' + str(xi_avg))
+xixs_ratio = round(xi_avg/xs_avg, 4)
+print('Xi/Xs ratio is ' + str(xixs_ratio))
+
 # Plot figures
 plt.style.use('ggplot') # set the global style
 xs, = plt.plot(concatenate((dde_camp.data[:, 0], dde_camp2.data[:, 0])), concatenate((dde_camp.data[:, 2],dde_camp2.data[:, 2])),  label=r'$X_S$')
@@ -123,7 +138,8 @@ plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
 plt.axis([0,sim_length,1.0e-4,1.0e10])
 #plt.text(sim_length*0.2,8.0e8,'$P(t)$= '+str(plyt_added)+' h', fontsize=f_size) # display parameters
-plt.text(Xs_extinct,1.5e10,'$t=$ ' + str(round(Xs_extinct,3)), fontsize=f_size) # display parameters
+plt.text(Xs_extinct,1.5e10,'$t=$ ' + str(round(Xs_extinct,3)), fontsize=f_size-1) # display parameters
+plt.text(0-0.5,1.5e10,'$r=$ ' + str(xixs_ratio), fontsize=f_size-1) # display parameters
 plt.tick_params(axis='both', labelsize=f_size)
 plt.vlines(Xs_extinct, 0,1.0e10, linewidth=0.5)
 
@@ -139,5 +155,5 @@ plt2.tick_params(axis='both', labelsize=f_size)
 p = [xs,xi,p,xl,pt,s]
 plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.tight_layout()
-#plt.show()
-plt.savefig('Model Batch Final.pdf')
+plt.show()
+#plt.savefig('Model Batch Final.pdf')
