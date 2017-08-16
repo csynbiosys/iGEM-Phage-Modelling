@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # Setting initial values
 u = 0.738 # h-1 (Levin et al., 1977)
 S0 = 30.0 # ug/ml(Levin et al., 1977)
-D = 0.20 # h-1  HERE USED AS COMMON DEATH RATE FOR BACTERIA   ? ? ? ? ?
+D = 0.0 # h-1 not used here
 Ki = 6.24e-8 # ml/h (Levin et al., 1977)
 b = 98.0 # (Levin et al., 1977)
 Km = 4.0 # ug/ml(Levin et al., 1977)
@@ -15,13 +15,13 @@ Y = 3.85e5 # (Levin et al., 1977)
 T = 0.5 #h-1 (Levin et al., 1977)
 Xs0 = 1.0e4 # cells/ml starting levels of cells (Levin et al., 1977)
 P0 = 0 # particles/ml starting levels of cells (Levin et al., 1977)
-q = 0.35# induction rate (...)
+q = 0.35# induction rate (Qiu, 2007)
 Pt0 = 1.0e6 # particles/ml of temperate phage
 Xl = 0 # no lysogenic bacteria present at the start
 Xi = 0 # no lytic bacteria present at the start
 
 sim_length = 20.0 # set the simulation length time
-plyt_added = 11.0 # time after start when lytic phage is added
+plyt_added = 5.0 # time after start when lytic phage is added
 
 dde_camp = p.dde()
 dde_camp2 = p.dde()
@@ -134,7 +134,7 @@ f_size = 15 # set font size for plot labels
 plt.xlabel('Time (hours)', fontsize=f_size)
 plt.ylabel('Log concentration (particles/ml)', fontsize=f_size)
 plt.yscale('log')
-plt.axis([0,20,1.0e-4,1.0e10])
+plt.axis([0,sim_length,1.0e-4,1.0e10])
 #plt.text(sim_length*0.2,8.0e8,'$P(t)$= '+str(plyt_added)+' h', fontsize=f_size) # display parameters
 plt.text(Xs_extinct,1.5e10,'$t=$ ' + str(round(Xs_extinct,3)), fontsize=f_size-1) # display parameters
 plt.text(0-0.5,1.5e10,'$r=$ ' + str(xixs_ratio), fontsize=f_size-1) # display parameters
