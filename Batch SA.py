@@ -90,11 +90,11 @@ def modify_param(param, percentage):
 
 def dde_sa (parameter, min, max, step):
     result = {} # dictionary to save {percentage : [Xs_extinct, xixs_ratio]}
-    for percentage in linspace(min,max,step):
+    for percentage in logspace(min,max,step):
         # Changing the parameter
         # modify_param(parameter,percentage)
-        q = percentage #
-        print('new q= ' + str(q))
+        P0 = percentage #
+        print('new P0= ' + str(P0))
         # Defining the gradient function
         # s - state(Xs or P?), c - constant(ddecons), t - time
         def ddegrad(s, c, t):
@@ -180,12 +180,16 @@ def dde_sa (parameter, min, max, step):
         #print('At t= ' + str(dde_camp.data[:, 0][-1]) + ', Xs =' + str(dde_camp.data[:, 2][-1]))
         #print('At t= ' + str(dde_camp2.data[:, 0][0]) + ', Xs =' +str(dde_camp2.data[:, 2][0]))
         Xs_extinct = Xs_extinction_times[0]
-        print('Xs went extinct at t= ' + str(Xs_extinct))
+        #print('Xs went extinct at t= ' + str(Xs_extinct))
 
         # Calculation of average concentration
         def get_avg(values):
-            less = values > 1.0e-15 # select only values above threshold
-            return values[less].sum()/len(values[less])
+            more = values > 1.0e-15 # select only values above threshold
+            #print(len(values[more]))
+            if len(values[more]) != 0:
+                return values[more].sum()/len(values[more])
+            else:
+                return 0
 
         # Calculation of r value (ratio of xi/xs)
         xs_avg = get_avg(concatenate((dde_camp.data[:, 2],dde_camp2.data[:, 2])))
@@ -228,7 +232,6 @@ def dde_sa (parameter, min, max, step):
 
         result[percentage]=[Xs_extinct,xixs_ratio]
         modify_param(parameter, 100.0) # return parameeter to its nominal value before running another simulation
-
     # # Plot figures for spyder plots
     # percentages = list(result.keys())
     # extinction_times = array(list(result.values()))[:,0]
@@ -246,10 +249,13 @@ def dde_sa (parameter, min, max, step):
 
 # Run SA
 SA_final_data = {}
-all_vars = ['q']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
+all_vars = ['P0']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
 color=iter(cm.rainbow(linspace(0,1,15)))
 for parameter in all_vars:
-    data = dde_sa(parameter, 1.0e-3, 1.0, 50) # a range
+    start = 0.0
+    stop = 7.0
+    step = 11
+    data = dde_sa(parameter, start, stop, step) # a range
     percentages = list(data.keys())
     extinction_times = array(list(data.values()))[:,0]
     #print(extinction_times)
@@ -258,15 +264,15 @@ for parameter in all_vars:
     # Calculate elasticities of Xs extinction_times and r-value per % change in the parameter
     time_elasticity = (extinction_times[-1] - extinction_times[0])/extinction_times[0]
     r_elasticity = (r_values[-1] - r_values[0])/r_values[0]
-    # Calculate Pearson Correlation Coefficient of Xs extinction_times and r-values
-    time_R = corrcoef([percentages, extinction_times])[1,0]
-    r_R = corrcoef([percentages, r_values])[1,0]
-
+    # # Calculate Pearson Correlation Coefficient of Xs extinction_times and r-values
+    # time_R = corrcoef([percentages, extinction_times])[1,0]
+    # r_R = corrcoef([percentages, r_values])[1,0]
+    #print('problem is here')
     # Plot a the change of XS extinction time and r-ratio per change in one parameter
     plt.style.use('ggplot') # set the global style
-    Xs_ext_plot, = plt.plot(linspace(1.0e-3, 1.0, 50),extinction_times, label=r'$time$')
+    Xs_ext_plot, = plt.plot(logspace(start, stop, step),extinction_times, label=r'$time$')
     f_size = 15 # set font size for plot labels
-    plt.xlabel('Log of induction rate $'+parameter+'$'+'', fontsize=f_size)
+    plt.xlabel('$'+parameter+'$'+' particles/ml', fontsize=f_size)
     plt.ylabel('Time of $X_S$ extinction', fontsize=f_size)
     plt.xscale('log')
     #plt.axis([0,20,1.0e-4,1.0e10])
@@ -278,12 +284,13 @@ for parameter in all_vars:
     #xticks = mtick.FormatStrFormatter(fmt)
     ax = plt.gca()
     #ax.xaxis.set_major_formatter(xticks)
-    plt.vlines(q_nominal, min(extinction_times),max(extinction_times), linewidth=0.5)
+    plt.vlines(P0_nominal, min(extinction_times),max(extinction_times), linewidth=0.5)
+
     # Plot substrate on the second y axis on top of the preivous figure
     plt2 = plt.twinx()
     plt2.grid(False)
     #ax.set_yscale('log')
-    r_values_plot, = plt.plot(percentages, r_values, 'black',  label=r'$r$-value')
+    r_values_plot, = plt.plot(logspace(start, stop, step), r_values, 'black',  label=r'$r$-value')
     plt2.set_ylabel(r'$r$-value', fontsize=f_size)
     plt2.set_yticks(linspace(min(r_values),max(r_values), 8))
     plt2.tick_params(axis='both', labelsize=f_size)
@@ -292,13 +299,13 @@ for parameter in all_vars:
     plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
     plt.tight_layout()
     #plt.show()
-    plt.savefig('SA q Batch '+'f_size'+ str(f_size) + '.pdf')
+    plt.savefig('SA P0 Batch '+'f_size'+ str(f_size) + '.pdf')
 
 
 
     # Save the final data into a dictionary
     round_to = 4
-    SA_final_data[parameter] = [round(time_elasticity,round_to),round(time_R,round_to),round(r_elasticity,round_to),round(r_R,round_to)]
+    #SA_final_data[parameter] = [round(time_elasticity,round_to),round(time_R,round_to),round(r_elasticity,round_to),round(r_R,round_to)]
     #print('Time E= ' + str(time_elasticity))
 
 # # Make a spider plot for the results of SA
