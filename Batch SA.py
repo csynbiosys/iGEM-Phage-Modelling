@@ -31,7 +31,7 @@ Tt_nominal = 0.5 # for temperate phage
 Kit_nominal = 6.24e-8 # for temperate phage
 bt_nominal = 98.0 # for temperate phage
 
-sim_length_nominal = 20.0 # set the simulation length time
+sim_length_nominal = 200.0 # set the simulation length time
 plyt_added_nominal = 5.0 # time after start when lytic phage is added
 
 # Setting initial values
@@ -90,11 +90,11 @@ def modify_param(param, percentage):
 
 def dde_sa (parameter, min, max, step):
     result = {} # dictionary to save {percentage : [Xs_extinct, xixs_ratio]}
-    for percentage in arange(min,max,step):
+    for percentage in linspace(min,max,step):
         # Changing the parameter
         # modify_param(parameter,percentage)
-        Tt = percentage #
-        print('new Tt= ' + str(Tt))
+        q = percentage #
+        print('new q= ' + str(q))
         # Defining the gradient function
         # s - state(Xs or P?), c - constant(ddecons), t - time
         def ddegrad(s, c, t):
@@ -246,13 +246,13 @@ def dde_sa (parameter, min, max, step):
 
 # Run SA
 SA_final_data = {}
-all_vars = ['Tt']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
+all_vars = ['q']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
 color=iter(cm.rainbow(linspace(0,1,15)))
 for parameter in all_vars:
-    data = dde_sa(parameter, 0.1, 1.0, 0.01) # a range
+    data = dde_sa(parameter, 1.0e-3, 1.0, 50) # a range
     percentages = list(data.keys())
     extinction_times = array(list(data.values()))[:,0]
-    print(extinction_times)
+    #print(extinction_times)
     r_values = array(list(data.values()))[:,1]
 
     # Calculate elasticities of Xs extinction_times and r-value per % change in the parameter
@@ -264,11 +264,11 @@ for parameter in all_vars:
 
     # Plot a the change of XS extinction time and r-ratio per change in one parameter
     plt.style.use('ggplot') # set the global style
-    Xs_ext_plot, = plt.plot(arange(0.1,1.0,0.01),extinction_times, label=r'$time$')
+    Xs_ext_plot, = plt.plot(linspace(1.0e-3, 1.0, 50),extinction_times, label=r'$time$')
     f_size = 15 # set font size for plot labels
-    plt.xlabel('Time latency $'+parameter+'$'+' (hours)', fontsize=f_size)
+    plt.xlabel('Log of induction rate $'+parameter+'$'+'', fontsize=f_size)
     plt.ylabel('Time of $X_S$ extinction', fontsize=f_size)
-    #plt.yscale('log')
+    plt.xscale('log')
     #plt.axis([0,20,1.0e-4,1.0e10])
     #plt.text(sim_length*0.2,8.0e8,'$P(t)$= '+str(plyt_added)+' h', fontsize=f_size) # display parameters
     #plt.text(Xs_extinct,1.5e10,'$t=$ ' + str(round(Xs_extinct,3)), fontsize=f_size-1) # display parameters
@@ -278,27 +278,28 @@ for parameter in all_vars:
     #xticks = mtick.FormatStrFormatter(fmt)
     ax = plt.gca()
     #ax.xaxis.set_major_formatter(xticks)
-    #plt.vlines(T_nominal, min(extinction_times),max(extinction_times), linewidth=0.5)
+    plt.vlines(q_nominal, min(extinction_times),max(extinction_times), linewidth=0.5)
     # Plot substrate on the second y axis on top of the preivous figure
     plt2 = plt.twinx()
     plt2.grid(False)
+    #ax.set_yscale('log')
     r_values_plot, = plt.plot(percentages, r_values, 'black',  label=r'$r$-value')
     plt2.set_ylabel(r'$r$-value', fontsize=f_size)
-    plt2.set_yticks(linspace(min(r_values),max(r_values), 3))
+    plt2.set_yticks(linspace(min(r_values),max(r_values), 8))
     plt2.tick_params(axis='both', labelsize=f_size)
     # Join legends from two separate plots into one
     p = [Xs_ext_plot,r_values_plot]
     plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
     plt.tight_layout()
     #plt.show()
-    plt.savefig('SA Tt Spyder Batch '+'f_size'+ str(f_size) + '.pdf')
+    plt.savefig('SA q Batch '+'f_size'+ str(f_size) + '.pdf')
 
 
 
     # Save the final data into a dictionary
     round_to = 4
     SA_final_data[parameter] = [round(time_elasticity,round_to),round(time_R,round_to),round(r_elasticity,round_to),round(r_R,round_to)]
-    print('Time E= ' + str(time_elasticity))
+    #print('Time E= ' + str(time_elasticity))
 
 # # Make a spider plot for the results of SA
 # f_size = 12 # set font size for plot labels
