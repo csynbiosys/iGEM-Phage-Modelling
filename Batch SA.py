@@ -90,11 +90,11 @@ def modify_param(param, percentage):
 
 def dde_sa (parameter, min, max, step):
     result = {} # dictionary to save {percentage : [Xs_extinct, xixs_ratio]}
-    for percentage in linspace(min,max,step):
+    for percentage in arange(min,max,step):
         # Changing the parameter
         # modify_param(parameter,percentage)
-        bt = percentage #
-        print('new bt= ' + str(bt))
+        plyt_added = percentage #
+        print('new plyt_added= ' + str(plyt_added))
         # Defining the gradient function
         # s - state(Xs or P?), c - constant(ddecons), t - time
         def ddegrad(s, c, t):
@@ -249,12 +249,12 @@ def dde_sa (parameter, min, max, step):
 
 # Run SA
 SA_final_data = {}
-all_vars = ['bt']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
+all_vars = ['plyt_added']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
 color=iter(cm.rainbow(linspace(0,1,15)))
 for parameter in all_vars:
-    start = 50
-    stop = 170
-    step = 10
+    start = 0.0
+    stop = 20.0
+    step = 0.25
     data = dde_sa(parameter, start, stop, step) # a range
     percentages = list(data.keys())
     extinction_times = array(list(data.values()))[:,0]
@@ -270,9 +270,9 @@ for parameter in all_vars:
     #print('problem is here')
     # Plot a the change of XS extinction time and r-ratio per change in one parameter
     plt.style.use('ggplot') # set the global style
-    Xs_ext_plot, = plt.plot(linspace(start, stop, step),extinction_times, label=r'$time$')
+    Xs_ext_plot, = plt.plot(arange(start, stop, step),extinction_times, label=r'$time$')
     f_size = 15 # set font size for plot labels
-    plt.xlabel('Burst size $'+parameter+'$'+'', fontsize=f_size)
+    plt.xlabel('Time (hours)', fontsize=f_size)
     plt.ylabel('Time of $X_S$ extinction', fontsize=f_size)
     #plt.xscale('log')
     #plt.axis([0,20,1.0e-4,1.0e10])
@@ -284,13 +284,13 @@ for parameter in all_vars:
     #xticks = mtick.FormatStrFormatter(fmt)
     ax = plt.gca()
     #ax.xaxis.set_major_formatter(xticks)
-    plt.vlines(b_nominal, min(extinction_times),max(extinction_times), linewidth=0.5)
+    plt.vlines(plyt_added_nominal, min(extinction_times),max(extinction_times), linewidth=0.5)
 
     # Plot substrate on the second y axis on top of the preivous figure
     plt2 = plt.twinx()
     plt2.grid(False)
     #ax.set_yscale('log')
-    r_values_plot, = plt.plot(linspace(start, stop, step), r_values, 'black',  label=r'$r$-value')
+    r_values_plot, = plt.plot(arange(start, stop, step), r_values, 'black',  label=r'$r$-value')
     plt2.set_ylabel(r'$r$-value', fontsize=f_size)
     plt2.set_yticks(linspace(min(r_values),max(r_values), 8))
     plt2.tick_params(axis='both', labelsize=f_size)
@@ -299,7 +299,7 @@ for parameter in all_vars:
     plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
     plt.tight_layout()
     #plt.show()
-    plt.savefig('SA bt Batch '+'f_size'+ str(f_size) + '.pdf')
+    plt.savefig('SA plyt_added Batch '+'f_size'+ str(f_size) + '.pdf')
 
 
 
