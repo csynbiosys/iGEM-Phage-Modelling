@@ -272,11 +272,7 @@ for parameter in all_vars:
     plt.style.use('ggplot') # set the global style
     Xs_ext_plot, = plt.plot(logspace(start, stop, step),extinction_times, label=r'$time$')
     f_size = 15 # set font size for plot labels
-<<<<<<< HEAD
     plt.xlabel('Log concentration of $'+parameter+'$'+' (particles/ml)', fontsize=f_size)
-=======
-    plt.xlabel('$'+parameter+'$'+' particles/ml', fontsize=f_size)
->>>>>>> df839498d128ac28ad94559f65841067194070c7
     plt.ylabel('Time of $X_S$ extinction', fontsize=f_size)
     plt.xscale('log')
     #plt.axis([0,20,1.0e-4,1.0e10])
