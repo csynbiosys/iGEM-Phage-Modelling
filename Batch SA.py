@@ -90,9 +90,11 @@ def modify_param(param, percentage):
 
 def dde_sa (parameter, min, max, step):
     result = {} # dictionary to save {percentage : [Xs_extinct, xixs_ratio]}
-    for percentage in linspace(min,max,step):
+    for percentage in arange(min,max,step):
         # Changing the parameter
-        modify_param(parameter,percentage)
+        # modify_param(parameter,percentage)
+        Tt = percentage #
+        print('new Tt= ' + str(Tt))
         # Defining the gradient function
         # s - state(Xs or P?), c - constant(ddecons), t - time
         def ddegrad(s, c, t):
@@ -178,7 +180,7 @@ def dde_sa (parameter, min, max, step):
         #print('At t= ' + str(dde_camp.data[:, 0][-1]) + ', Xs =' + str(dde_camp.data[:, 2][-1]))
         #print('At t= ' + str(dde_camp2.data[:, 0][0]) + ', Xs =' +str(dde_camp2.data[:, 2][0]))
         Xs_extinct = Xs_extinction_times[0]
-        #print('Xs went extinct at t= ' + str(Xs_extinct))
+        print('Xs went extinct at t= ' + str(Xs_extinct))
 
         # Calculation of average concentration
         def get_avg(values):
@@ -227,29 +229,30 @@ def dde_sa (parameter, min, max, step):
         result[percentage]=[Xs_extinct,xixs_ratio]
         modify_param(parameter, 100.0) # return parameeter to its nominal value before running another simulation
 
-    # Plot figures
-    percentages = list(result.keys())
-    extinction_times = array(list(result.values()))[:,0]
-    r_values = array(list(result.values()))[:,1]
-    plt.style.use('ggplot') # set the global style
-    # Plot only parameters that have an absolute elasticity over 0.01
-    time_elasticity = (extinction_times[-1] - extinction_times[0])/extinction_times[0]
-    r_elasticity = (r_values[-1] - r_values[0])/r_values[0]
-    if r_elasticity > 0.01 or r_elasticity < -0.01:
-        c=next(color) # pick next colour to avoid repetition
-        temp_plot, = plt.plot(percentages,r_values, c=c, label=r'$'+parameter+'$')
-        plts.append(temp_plot)
+    # # Plot figures for spyder plots
+    # percentages = list(result.keys())
+    # extinction_times = array(list(result.values()))[:,0]
+    # r_values = array(list(result.values()))[:,1]
+    # plt.style.use('ggplot') # set the global style
+    # # Plot only parameters that have an absolute elasticity over 0.01
+    # time_elasticity = (extinction_times[-1] - extinction_times[0])/extinction_times[0]
+    # r_elasticity = (r_values[-1] - r_values[0])/r_values[0]
+    # if r_elasticity > 0.01 or r_elasticity < -0.01:
+    #     c=next(color) # pick next colour to avoid repetition
+    #     temp_plot, = plt.plot(percentages,r_values, c=c, label=r'$'+parameter+'$')
+    #     plts.append(temp_plot)
 
     return result
 
 # Run SA
 SA_final_data = {}
-all_vars = ['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
+all_vars = ['Tt']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
 color=iter(cm.rainbow(linspace(0,1,15)))
 for parameter in all_vars:
-    data = dde_sa(parameter, 50.0, 150.0, 10)
+    data = dde_sa(parameter, 0.1, 1.0, 0.01) # a range
     percentages = list(data.keys())
     extinction_times = array(list(data.values()))[:,0]
+    print(extinction_times)
     r_values = array(list(data.values()))[:,1]
 
     # Calculate elasticities of Xs extinction_times and r-value per % change in the parameter
@@ -259,32 +262,65 @@ for parameter in all_vars:
     time_R = corrcoef([percentages, extinction_times])[1,0]
     r_R = corrcoef([percentages, r_values])[1,0]
 
+    # Plot a the change of XS extinction time and r-ratio per change in one parameter
+    plt.style.use('ggplot') # set the global style
+    Xs_ext_plot, = plt.plot(arange(0.1,1.0,0.01),extinction_times, label=r'$time$')
+    f_size = 15 # set font size for plot labels
+    plt.xlabel('Time latency $'+parameter+'$'+' (hours)', fontsize=f_size)
+    plt.ylabel('Time of $X_S$ extinction', fontsize=f_size)
+    #plt.yscale('log')
+    #plt.axis([0,20,1.0e-4,1.0e10])
+    #plt.text(sim_length*0.2,8.0e8,'$P(t)$= '+str(plyt_added)+' h', fontsize=f_size) # display parameters
+    #plt.text(Xs_extinct,1.5e10,'$t=$ ' + str(round(Xs_extinct,3)), fontsize=f_size-1) # display parameters
+    #plt.text(0-0.5,1.5e10,'$r=$ ' + str(xixs_ratio), fontsize=f_size-1) # display parameters
+    plt.tick_params(axis='both', labelsize=f_size)
+    #fmt = '%.0f%%' # Format you want the ticks, e.g. '40%'
+    #xticks = mtick.FormatStrFormatter(fmt)
+    ax = plt.gca()
+    #ax.xaxis.set_major_formatter(xticks)
+    #plt.vlines(T_nominal, min(extinction_times),max(extinction_times), linewidth=0.5)
+    # Plot substrate on the second y axis on top of the preivous figure
+    plt2 = plt.twinx()
+    plt2.grid(False)
+    r_values_plot, = plt.plot(percentages, r_values, 'black',  label=r'$r$-value')
+    plt2.set_ylabel(r'$r$-value', fontsize=f_size)
+    plt2.set_yticks(linspace(min(r_values),max(r_values), 3))
+    plt2.tick_params(axis='both', labelsize=f_size)
+    # Join legends from two separate plots into one
+    p = [Xs_ext_plot,r_values_plot]
+    plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
+    plt.tight_layout()
+    #plt.show()
+    plt.savefig('SA Tt Spyder Batch '+'f_size'+ str(f_size) + '.pdf')
+
+
+
     # Save the final data into a dictionary
     round_to = 4
     SA_final_data[parameter] = [round(time_elasticity,round_to),round(time_R,round_to),round(r_elasticity,round_to),round(r_R,round_to)]
-
     print('Time E= ' + str(time_elasticity))
 
-# Make a spider plot for the results of SA
-f_size = 12 # set font size for plot labels
-plots = plts
-plt.legend(plots, [plots_.get_label() for plots_ in plots],loc='best', fontsize= 'small', prop={'size': f_size})
-plt.xlabel('Parameter change from base', fontsize=f_size)
-plt.ylabel('$r-$value', fontsize=f_size)
-plt.tick_params(axis='both', labelsize=f_size)
-fmt = '%.0f%%' # Format you want the ticks, e.g. '40%'
-xticks = mtick.FormatStrFormatter(fmt)
-plt.yscale('log')
-ax = plt.gca()
-ax.xaxis.set_major_formatter(xticks)
-plt.vlines(100.0, ax.get_ylim()[0],ax.get_ylim()[1], linewidth=0.75)
-# Shrink current axis by 20%
-box = ax.get_position()
-ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-# Put a legend to the right of the current axis
-ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': f_size})
-#plt.show()
-plt.savefig('SA r-value Spyder Batch Plyt_' + str(plyt_added) +' '+'f_size'+ str(f_size) + '.pdf')
+# # Make a spider plot for the results of SA
+# f_size = 12 # set font size for plot labels
+# plots = plts
+# plt.legend(plots, [plots_.get_label() for plots_ in plots],loc='best', fontsize= 'small', prop={'size': f_size})
+# plt.xlabel('Parameter change from base', fontsize=f_size)
+# plt.ylabel('$r-$value', fontsize=f_size)
+# plt.tick_params(axis='both', labelsize=f_size)
+# fmt = '%.0f%%' # Format you want the ticks, e.g. '40%'
+# xticks = mtick.FormatStrFormatter(fmt)
+# plt.yscale('log')
+# ax = plt.gca()
+# ax.xaxis.set_major_formatter(xticks)
+# plt.vlines(100.0, ax.get_ylim()[0],ax.get_ylim()[1], linewidth=0.75)
+# # Shrink current axis by 20%
+# box = ax.get_position()
+# ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+# # Put a legend to the right of the current axis
+# ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': f_size})
+# #plt.show()
+# plt.savefig('SA r-value Spyder Batch Plyt_' + str(plyt_added) +' '+'f_size'+ str(f_size) + '.pdf')
+
 
 # Write results of SA into table
 # with open('SA_final_data.csv', 'w') as csv_file:
@@ -292,33 +328,3 @@ plt.savefig('SA r-value Spyder Batch Plyt_' + str(plyt_added) +' '+'f_size'+ str
 #     writer.writerow(['Parameter', 'E of XS extinction','PCC', 'E of r-value', 'PCC'])
 #     for key, value in SA_final_data.items():
 #        writer.writerow([key, value[0], value[1], value[2], value[3]])
-
-# # Plot a the change of XS extinction time and r-ratio per change in one parameter
-# plt.style.use('ggplot') # set the global style
-# Xs_ext_plot, = plt.plot(percentages,extinction_times, label=r'$time$')
-# f_size = 15 # set font size for plot labels
-# plt.xlabel('Parameter $'+parameter+'$'+' (change from base)', fontsize=f_size)
-# plt.ylabel('Time of $X_S$ extinction', fontsize=f_size)
-# #plt.yscale('log')
-# #plt.axis([0,20,1.0e-4,1.0e10])
-# #plt.text(sim_length*0.2,8.0e8,'$P(t)$= '+str(plyt_added)+' h', fontsize=f_size) # display parameters
-# #plt.text(Xs_extinct,1.5e10,'$t=$ ' + str(round(Xs_extinct,3)), fontsize=f_size-1) # display parameters
-# #plt.text(0-0.5,1.5e10,'$r=$ ' + str(xixs_ratio), fontsize=f_size-1) # display parameters
-# plt.tick_params(axis='both', labelsize=f_size)
-# fmt = '%.0f%%' # Format you want the ticks, e.g. '40%'
-# xticks = mtick.FormatStrFormatter(fmt)
-# ax = plt.gca()
-# ax.xaxis.set_major_formatter(xticks)
-# plt.vlines(100, min(extinction_times),max(extinction_times), linewidth=0.5)
-# # Plot substrate on the second y axis on top of the preivous figure
-# plt2 = plt.twinx()
-# plt2.grid(False)
-# r_values_plot, = plt.plot(percentages, r_values, 'black',  label=r'$r$-value')
-# plt2.set_ylabel(r'$r$-value', fontsize=f_size)
-# plt2.set_yticks(linspace(min(r_values),max(r_values), 3))
-# plt2.tick_params(axis='both', labelsize=f_size)
-# # Join legends from two separate plots into one
-# p = [Xs_ext_plot,r_values_plot]
-# plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
-# plt.tight_layout()
-# plt.show()
