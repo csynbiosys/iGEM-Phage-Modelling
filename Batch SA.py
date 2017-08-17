@@ -93,8 +93,8 @@ def dde_sa (parameter, min, max, step):
     for percentage in linspace(min,max,step):
         # Changing the parameter
         # modify_param(parameter,percentage)
-        b = percentage #
-        print('new b= ' + str(b))
+        bt = percentage #
+        print('new bt= ' + str(bt))
         # Defining the gradient function
         # s - state(Xs or P?), c - constant(ddecons), t - time
         def ddegrad(s, c, t):
@@ -249,11 +249,11 @@ def dde_sa (parameter, min, max, step):
 
 # Run SA
 SA_final_data = {}
-all_vars = ['b']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
+all_vars = ['bt']#['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
 color=iter(cm.rainbow(linspace(0,1,15)))
 for parameter in all_vars:
-    start = 40
-    stop = 175
+    start = 50
+    stop = 170
     step = 10
     data = dde_sa(parameter, start, stop, step) # a range
     percentages = list(data.keys())
@@ -299,7 +299,7 @@ for parameter in all_vars:
     plt.legend(p, [p_.get_label() for p_ in p],loc='best', fontsize= 'small', prop={'size': f_size})
     plt.tight_layout()
     #plt.show()
-    plt.savefig('SA b Batch '+'f_size'+ str(f_size) + '.pdf')
+    plt.savefig('SA bt Batch '+'f_size'+ str(f_size) + '.pdf')
 
 
 
