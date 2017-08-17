@@ -243,7 +243,7 @@ def dde_sa (parameter, min, max, step):
 SA_final_data = {}
 all_vars = ['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
 for parameter in all_vars:
-    data = dde_sa(parameter, 50.0, 150.0, 100)
+    data = dde_sa(parameter, 50.0, 150.0, 10)
     percentages = list(data.keys())
     extinction_times = array(list(data.values()))[:,0]
     r_values = array(list(data.values()))[:,1]
@@ -279,13 +279,14 @@ ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 # Put a legend to the right of the current axis
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': f_size})
 #plt.show()
+plt.savefig('SA Spyder Batch Plyt_' + str(plyt_added) +' '+'f_size'+ str(f_size) + '.pdf')
 
 # Write results of SA into table
-with open('SA_final_data.csv', 'w') as csv_file:
-    writer = csv.writer(csv_file)
-    writer.writerow(['Parameter', 'E of XS extinction','PCC', 'E of r-value', 'PCC'])
-    for key, value in SA_final_data.items():
-       writer.writerow([key, value[0], value[1], value[2], value[3]])
+# with open('SA_final_data.csv', 'w') as csv_file:
+#     writer = csv.writer(csv_file)
+#     writer.writerow(['Parameter', 'E of XS extinction','PCC', 'E of r-value', 'PCC'])
+#     for key, value in SA_final_data.items():
+#        writer.writerow([key, value[0], value[1], value[2], value[3]])
 
 # # Plot a the change of XS extinction time and r-ratio per change in one parameter
 # plt.style.use('ggplot') # set the global style
