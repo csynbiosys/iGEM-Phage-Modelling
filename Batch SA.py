@@ -3,6 +3,7 @@ from scipy import *
 from numpy import *
 import PyDDE.pydde as p
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import matplotlib.ticker as mtick
 import csv
 
@@ -233,8 +234,10 @@ def dde_sa (parameter, min, max, step):
     plt.style.use('ggplot') # set the global style
     # Plot only parameters that have an absolute elasticity over 0.01
     time_elasticity = (extinction_times[-1] - extinction_times[0])/extinction_times[0]
-    if time_elasticity < -0.01 or time_elasticity > 0.01:
-        temp_plot, = plt.plot(percentages,extinction_times, label=r'$'+parameter+'$')
+    r_elasticity = (r_values[-1] - r_values[0])/r_values[0]
+    if r_elasticity > 0.01 or r_elasticity < -0.01:
+        c=next(color) # pick next colour to avoid repetition
+        temp_plot, = plt.plot(percentages,r_values, c=c, label=r'$'+parameter+'$')
         plts.append(temp_plot)
 
     return result
@@ -242,6 +245,7 @@ def dde_sa (parameter, min, max, step):
 # Run SA
 SA_final_data = {}
 all_vars = ['u','ui','ul','S0','Ki','Kit','b','bt','Km','Kmi','Kml','Y','Yi','Yl','T','Tt','q','Pt0','P0','Xs0']
+color=iter(cm.rainbow(linspace(0,1,15)))
 for parameter in all_vars:
     data = dde_sa(parameter, 50.0, 150.0, 10)
     percentages = list(data.keys())
@@ -266,10 +270,11 @@ f_size = 12 # set font size for plot labels
 plots = plts
 plt.legend(plots, [plots_.get_label() for plots_ in plots],loc='best', fontsize= 'small', prop={'size': f_size})
 plt.xlabel('Parameter change from base', fontsize=f_size)
-plt.ylabel('Time of $X_S$ extinction', fontsize=f_size)
+plt.ylabel('$r-$value', fontsize=f_size)
 plt.tick_params(axis='both', labelsize=f_size)
 fmt = '%.0f%%' # Format you want the ticks, e.g. '40%'
 xticks = mtick.FormatStrFormatter(fmt)
+plt.yscale('log')
 ax = plt.gca()
 ax.xaxis.set_major_formatter(xticks)
 plt.vlines(100.0, ax.get_ylim()[0],ax.get_ylim()[1], linewidth=0.75)
@@ -279,7 +284,7 @@ ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 # Put a legend to the right of the current axis
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), prop={'size': f_size})
 #plt.show()
-plt.savefig('SA Spyder Batch Plyt_' + str(plyt_added) +' '+'f_size'+ str(f_size) + '.pdf')
+plt.savefig('SA r-value Spyder Batch Plyt_' + str(plyt_added) +' '+'f_size'+ str(f_size) + '.pdf')
 
 # Write results of SA into table
 # with open('SA_final_data.csv', 'w') as csv_file:
