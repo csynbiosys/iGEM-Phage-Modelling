@@ -10,17 +10,17 @@ washout_Xs:
     Xs*D
 
 infection_by_P:
-    Xs + P > Xs
-    P*Xs*Ki
+    Xs + P > Xi #Typo: Xs + P > Xs changed to Xs + P > Xi
+    Xs*P*Ki #Rate of infection is dependent on Xs and P
 
 
 lysis_of_Xi:
     Xi > {98}P
-    2
+    Xi*(1/0.5) #Lysis rate is cells/hr
 
-washout_P:
-   P > $pool
-   P*D
+#washout_P:
+#    P > $pool
+#    P*D
     
 #deactivation_of_P:
 #    P > $pool
@@ -34,13 +34,13 @@ washout_P:
 
 
 # Variable species
-Xi = 1.0e1   # cells/ml
-Xs = 1.0e1    # cells/ml
-P = 1.0e2   # particles/ml
+Xi = 0   # cells/ml
+Xs = (1.0e2) * 5    # cells/ml
+P = (1.0e3) * 5   # particles/ml
 
 # Parameters
 #Na = 6.02e23  # mol-1
-V = 5.0 # ml
+V = 5 # ml
 u = 0.738 # h-1
 D = 0.20 # h-1
 dp = 0.1 # h-1
